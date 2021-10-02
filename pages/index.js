@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
@@ -69,7 +70,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {nfts.map((nft) => (
             <div key={nft.tokenId} className="border shadow rounded-xl overflow-hidden">
-              <Image alt={nft.name} src={nft.image} />
+              <img alt={nft.name} src={nft.image} />
               <div className="p-4">
                 <p style={{ height: '64px' }} className="text-2xl font-semibold">
                   {nft.name}

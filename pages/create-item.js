@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useState } from 'react'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
@@ -20,7 +21,7 @@ export default function CreateItem() {
     const file = event.target.files[0]
     try {
       const addedFile = await client.add(file, { progress: (prog) => console.log(`received: ${prog}`) })
-      const url = `https://ipfs.infura.io/ipfs/${addedFile[0].path}`
+      const url = `https://ipfs.infura.io/ipfs/${addedFile.path}`
       setFileUrl(url)
     } catch (error) {
       console.error(error)
@@ -35,7 +36,7 @@ export default function CreateItem() {
 
     try {
       const addedData = await client.add(data)
-      const url = `https://ipfs.infura.io/ipfs/${addedData[0].path}`
+      const url = `https://ipfs.infura.io/ipfs/${addedData.path}`
       createSale(url)
     } catch (error) {
       console.error(error)
@@ -65,11 +66,11 @@ export default function CreateItem() {
   return (
     <div className="flex justify-center">
       <div className="w-1/2 flex flex-col pb-12">
-        <input placeholder="Asset Name" className="mt-8 border rounded p-4" onChange={(e) => setForm({ ...formInput, name: e.target.value })} />
-        <textarea placeholder="Asset Description" className="mt-2 border rounded p-4" onChange={(e) => setForm({ ...formInput, description: e.target.value })} />
-        <input placeholder="Asset Price in Eth" className="mt-2 border rounded p-4" onChange={(e) => setForm({ ...formInput, price: e.target.value })} />
+        <input placeholder="Asset Name" className="mt-8 border rounded p-4" onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        <textarea placeholder="Asset Description" className="mt-2 border rounded p-4" onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        <input placeholder="Asset Price in Eth" className="mt-2 border rounded p-4" onChange={(e) => setForm({ ...form, price: e.target.value })} />
         <input type="file" name="Asset" className="my-4" onChange={onFileInputChange} />
-        {fileUrl && <Image alt={form?.name} className="rounded mt-4" src={fileUrl} width="350" />}
+        {fileUrl && <img alt={form?.name} className="rounded mt-4" src={fileUrl} width="350px" />}
         <button className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={createMarket}>
           Create Digital Asset
         </button>
