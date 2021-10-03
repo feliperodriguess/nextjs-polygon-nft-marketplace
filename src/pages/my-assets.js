@@ -8,22 +8,14 @@ import { nftMarketAddress, nftAddress } from '../config'
 
 import NFTMarket from '../artifacts/contracts/NFT.Market.sol/NFTMarket.json'
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
+import { DEFAULT_WEB3_MODAL_CONFIG, getWalletInfo } from '../utils/helpers'
 
 export default function MyAssets() {
   const [nfts, setNfts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   async function loadNFTs() {
-    const web3Modal = new Web3Modal({
-      network: 'mainnet',
-      cacheProvider: true,
-    })
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
-
-    const marketContract = new ethers.Contract(nftMarketAddress, NFTMarket.abi, signer)
-    const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
+    const { tokenContract, marketContract } = await getWalletInfo(DEFAULT_WEB3_MODAL_CONFIG)
     const data = await marketContract.fetchMyNFTs()
 
     const items = await Promise.all(
