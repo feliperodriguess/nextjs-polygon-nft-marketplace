@@ -1,44 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
-import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import Web3Modal from 'web3modal'
 
-import { nftMarketAddress, nftAddress } from '../config'
-
-import NFTMarket from '../artifacts/contracts/NFT.Market.sol/NFTMarket.json'
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
-import { DEFAULT_WEB3_MODAL_CONFIG, getWalletInfo } from '../utils/helpers'
+import { DEFAULT_WEB3_MODAL_CONFIG, getContracts, getNfts } from '../utils/helpers'
 
 export default function MyAssets() {
   const [nfts, setNfts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  async function loadNFTs() {
-    const { tokenContract, marketContract } = await getWalletInfo(DEFAULT_WEB3_MODAL_CONFIG)
-    const data = await marketContract.fetchMyNFTs()
-
-    const items = await Promise.all(
-      data.map(async (item) => {
-        const tokenUri = await tokenContract.tokenURI(item.tokenId)
-        const meta = await axios.get(tokenUri)
-        let price = ethers.utils.formatUnits(item.price.toString(), 'ether')
-        const { owner, seller, tokenId } = item
-        return {
-          price,
-          tokenId: tokenId.toNumber(),
-          seller,
-          owner,
-          image: meta.data.image,
-        }
-      })
-    )
-    setNfts(items)
-    setIsLoading(false)
-  }
-
   useEffect(() => {
-    loadNFTs()
+    ;(async () => {
+      const { tokenContract, marketContract } = await getContracts(DEFAULT_WEB3_MODAL_CONFIG)
+      const data = await marketContract.fetchMyNFTs()
+      const items = await getNfts(data, tokenContract)
+      setNfts(items)
+      setIsLoading(false)
+    })()
   }, [])
 
   if (!isLoading && !nfts.length) return <h1 className="py-10 px-20 text-3xl">No assets owned</h1>

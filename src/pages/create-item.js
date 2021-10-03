@@ -1,14 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from 'react'
 import { ethers } from 'ethers'
-import Web3Modal from 'web3modal'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
-import Image from 'next/image'
 
-import { nftAddress, nftMarketAddress } from '../config'
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
-import NFTMarket from '../artifacts/contracts/NFT.market.sol/NFTMarket.json'
+import { nftAddress } from '../config'
+import { getContracts } from '../utils/helpers'
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
@@ -33,7 +30,6 @@ export default function CreateItem() {
     const isFormEmpty = Object.values(form).every((value) => !value)
     if (isFormEmpty) return
     const data = JSON.stringify({ name, description, image: fileUrl })
-
     try {
       const addedData = await client.add(data)
       const url = `https://ipfs.infura.io/ipfs/${addedData.path}`
@@ -44,18 +40,14 @@ export default function CreateItem() {
   }
 
   const createSale = async (url) => {
-    const web3Modal = new Web3Modal()
-    const walletConnection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(walletConnection)
-    const signer = provider.getSigner()
-    let contract = new ethers.Contract(nftAddress, NFT.abi, signer)
+    let { tokenSignerContract: contract, marketContract } = await getContracts()
     let transaction = await contract.createToken(url)
     const tx = await transaction.wait()
     const [event] = tx.events
     const value = event.args[2]
     const tokenId = value.toNumber()
     const price = ethers.utils.parseUnits(form.price, 'ether')
-    contract = new ethers.Contract(nftMarketAddress, NFTMarket.abi, signer)
+    contract = marketContract
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
     transaction = await contract.createMarketItem(nftAddress, tokenId, price, { value: listingPrice })
