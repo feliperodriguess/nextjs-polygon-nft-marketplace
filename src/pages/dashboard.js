@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { DEFAULT_WEB3_MODAL_CONFIG, getContracts, getNfts } from '../utils/helpers'
 

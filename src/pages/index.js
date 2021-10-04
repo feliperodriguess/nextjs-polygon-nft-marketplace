@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { ethers } from 'ethers'
 
-import { nftAddress, nftMarketAddress } from '../config'
+import { nftAddress } from '../../config'
 import { getContracts, getNfts } from '../utils/helpers'
 
 export default function Home() {
@@ -10,9 +10,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
 
   const loadNfts = async () => {
-    const { tokenContract, marketProviderContract: marketContract } = await getContracts({}, true)
+    const { tokenContract, marketProviderContract: marketContract } = await getContracts(null, true)
     const data = await marketContract.fetchMarketItems()
-    const items = await getNfts(data, tokenContract)
+    const items = await getNfts(data || [], tokenContract)
     setNfts(items)
     setIsLoading(false)
   }

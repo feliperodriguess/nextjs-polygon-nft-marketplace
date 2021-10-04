@@ -1,3 +1,4 @@
+import axios from 'axios'
 import Web3Modal from 'web3modal'
 import { ethers } from 'ethers'
 
@@ -30,8 +31,8 @@ export const getNfts = async (data, tokenContract) =>
     })
   )
 
-export const getContracts = async (config, hasJsonRpcProvider = false) => {
-  const web3Modal = new Web3Modal(config)
+export const getContracts = async (config = null, hasJsonRpcProvider = false) => {
+  const web3Modal = config ? new Web3Modal(config) : new Web3Modal()
   const connection = await web3Modal.connect()
   const provider = hasJsonRpcProvider ? new ethers.providers.JsonRpcProvider() : new ethers.providers.Web3Provider(connection)
   const signer = provider.getSigner()
